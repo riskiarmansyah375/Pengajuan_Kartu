@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Role;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use App\Models\Pengajuan;
+
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'role_id'
+])]
+#[Hidden([
+    'password',
+    'remember_token'
+])]
+class User extends Authenticatable
+{
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
+
+    /**
+     * Attribute Casting
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Relasi ke Role
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function hasPermission($permission)
+{
+    if (!$this->role) {
+        return false;
+    }
+
+    return $this->role
+        ->permissions()
+        ->where('name', $permission)
+        ->exists();
+}
+
+public function pengajuans()
+{
+    return $this->hasMany(Pengajuan::class);
+}
+
+}
