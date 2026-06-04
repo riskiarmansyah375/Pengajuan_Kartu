@@ -20,7 +20,9 @@ class KartuController extends Controller
                 );
 
             }
-        )->first();
+        )
+        ->latest('id')
+        ->first();
 
         return view(
             'warga.kartu.index',
@@ -28,7 +30,6 @@ class KartuController extends Controller
         );
     }
 
-    // TAMBAHKAN METHOD INI
     public function download(KartuSampah $kartu)
     {
         if (
@@ -44,7 +45,7 @@ class KartuController extends Controller
         );
 
         return $pdf->download(
-            $kartu->nomor_kartu.'.pdf'
+            $kartu->nomor_kartu . '.pdf'
         );
     }
 }
